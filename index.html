@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XAU V9.34.3 ULTIMATE</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f1115;color:#fff;padding:12px}
+.header{display:flex;justify-content:space-between;align-items:center;background:#1a1d27;padding:12px;border-radius:12px;margin-bottom:10px;border-left:4px solid #00ff88}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:bold}
+.badge-on{background:#00ff88;color:#000}.badge-off{background:#ff3b3b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.card{background:#1a1d27;padding:12px;border-radius:10px;border:1px solid #2a2e3f}
+.card h4{font-size:11px;color:#888;margin-bottom:4px}.card b{font-size:16px}
+.card small{font-size:11px;color:#00ff88}
+.btn{padding:10px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;font-size:12px;margin:2px}
+.btn-g{background:#00ff88;color:#000}.btn-r{background:#ff3b3b;color:#fff}.btn-y{background:#ffcc00;color:#000}.btn-d{background:#2a2e3f;color:#fff}
+.flex{display:flex;gap:6px}
+table{width:100%;font-size:11px;border-collapse:collapse;margin-top:6px}
+th{color:#888;text-align:left;padding:6px;border-bottom:1px solid #2a2e3f}
+td{padding:6px;border-bottom:1px solid #1a1d27}
+.ping{color:#00ff88;font-weight:bold}
+.history{background:#1a1d27;border-radius:10px;padding:10px;margin-top:10px}
+.profit-pos{color:#00ff88}.profit-neg{color:#ff3b3b}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div><b>XAU V9.34.3 ULTIMATE</b><br><small id="login">Login: --</small> <small class="ping" id="ping">Ping: --ms</small></div>
+  <div><span id="mt5badge" class="badge badge-on">MT5 TETAP LOGIN</span></div>
+</div>
+
+<div class="grid">
+  <div class="card"><h4>BALANCE</h4><b id="bal">$0.00</b></div>
+  <div class="card"><h4>EQUITY</h4><b id="eq">$0.00</b><br><small id="float">Float: $0.00</small></div>
+  <div class="card"><h4>POSITIONS</h4><b id="pos">0</b><br><small id="price">XAU: 0.00</small></div>
+  <div class="card"><h4>DAILY PnL</h4><b id="daily">$0.00</b><br><small id="dailyStart">Start: $0</small></div>
+</div>
+
+<div class="card" style="margin-bottom:10px">
+  <h4>CONTROL EA - MT5 TETAP LOGIN</h4>
+  <div class="flex" style="margin-top:8px">
+    <button class="btn btn-g" onclick="sendCmd('START')">🟢 START</button>
+    <button class="btn btn-y" onclick="sendCmd('STOP')">⏸️ STOP</button>
+    <button class="btn btn-r" onclick="sendCmd('KILL')">🔴 KILL ALL</button>
+  </div>
+  <div class="flex" style="margin-top:6px">
+    <button class="btn btn-d" onclick="mt5('status')">📊 MT5 STATUS</button>
+    <button class="btn btn-d" onclick="mt5('start')">🚀 MT5 START</button>
+    <button class="btn btn-d" onclick="mt5('restart')">🔄 MT5 RESTART</button>
+  </div>
+  <div class="flex" style="margin-top:6px">
+    <button class="btn btn-d" onclick="git('status')">📦 GIT STATUS</button>
+    <button class="btn btn-d" onclick="git('pull')">🔄 GIT PULL</button>
+    <button class="btn btn-d" onclick="testTele()">📨 TEST 5 NOTIF TELE</button>
+  </div>
+</div>
+
+<div class="card">
+  <h4>OPEN POSITIONS - PING TETAP ADA</h4>
+  <table><thead><tr><th>Ticket</th><th>Type</th><th>Lot</th><th>Profit</th></tr></thead><tbody id="openBody"><tr><td colspan=4>Loading...</td></tr></tbody></table>
+</div>
+
+<div class="history">
+  <h4>HISTORY PERMANEN - TETAP ADA (50 TERAKHIR)</h4>
+  <table><thead><tr><th>Ticket</th><th>Profit</th><th>Time</th></tr></thead><tbody id="histBody"></tbody></table>
+</div>
+
+<div class="card" style="margin-top:10px;font-size:11px;color:#888">
+  <b>V9.34.3 ULTIMATE BUILD</b><br>
+  Telegram: /status /mt5 start /update /push <pesan> + kirim .ex5 langsung<br>
+  GitHub: <span id="repo">-</span> | Ping: <span id="ping2">-</span> | MT5: TETAP LOGIN
+</div>
+
+<script>
+const TOKEN = localStorage.getItem('token') || prompt('Masukkan AUTH TOKEN:','xau-secret-9343') || 'xau-secret-9343';
+localStorage.setItem('token',TOKEN);
+const API = '';
+
+async function load(){
+  try{
+    const r = await fetch(API+'/api/status',{headers:{'x-auth-token':TOKEN}});
+    const d = await r.json();
+    document.getElementById('login').innerText='Login: #'+d.login;
+    document.getElementById('bal').innerText='$'+d.balance.toFixed(2);
+    document.getElementById('eq').innerText='$'+d.equity.toFixed(2);
+    document.getElementById('float').innerText='Float: $'+d.floating.toFixed(2);
+    document.getElementById('pos').innerText=d.positions.length;
+    document.getElementById('price').innerText='XAU: '+(d.price||0);
+    document.getElementById('ping').innerText='Ping: '+(d.ping||0)+'ms';
+    document.getElementById('ping2').innerText=d.ping+'ms';
+    document.getElementById('daily').innerText='$'+(d.equity-d.dailyStart).toFixed(2);
+    document.getElementById('dailyStart').innerText='Start: $'+d.dailyStart.toFixed(0);
+    document.getElementById('repo').innerText=d.repo||'XAU-V9.34.3';
+
+    document.getElementById('openBody').innerHTML = d.positions.length ? d.positions.map(p=>`<tr><td>#${p.ticket}</td><td>${p.type}</td><td>${p.lot}</td><td class="${p.profit>=0?'profit-pos':'profit-neg'}">$${p.profit.toFixed(2)}</td></tr>`).join('') : '<tr><td colspan=4>No open</td></tr>';
+    document.getElementById('histBody').innerHTML = (d.history||[]).slice().reverse().map(h=>`<tr><td>#${h.ticket}</td><td class="${h.profit>=0?'profit-pos':'profit-neg'}">$${h.profit.toFixed(2)}</td><td>${new Date(h.time).toLocaleTimeString('id-ID')}</td></tr>`).join('') || '<tr><td colspan=3>No history</td></tr>';
+  }catch(e){ console.log(e); }
+}
+function sendCmd(cmd){ fetch('/api/ea/control',{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':TOKEN},body:JSON.stringify({command:cmd})}).then(()=>{ alert(cmd+' sent - MT5 TETAP LOGIN'); load(); }); }
+function mt5(act){ fetch('/telegram-webhook/bot/tele',{method:'POST'}); // trigger via server
+  if(act==='status') alert('Cek Telegram: /mt5 status');
+  if(act==='start') { fetch('/api/mt5/start',{method:'POST',headers:{'x-auth-token':TOKEN}}); alert('MT5 START via Telegram - MT5 TETAP LOGIN'); }
+  if(act==='restart') { fetch('/api/mt5/restart',{method:'POST',headers:{'x-auth-token':TOKEN}}); alert('MT5 RESTART'); }
+}
+function git(act){
+  if(act==='pull') fetch('/api/git/pull',{method:'POST',headers:{'x-auth-token':TOKEN}}).then(()=>alert('GIT PULL via Telegram - /update'));
+  if(act==='status') load();
+}
+function testTele(){ fetch('/api/telegram/test',{method:'POST',headers:{'x-auth-token':TOKEN}}).then(()=>alert('TEST 5 NOTIF TELEGRAM DIKIRIM')); }
+setInterval(load,3000);
+load();
+</script>
+</body>
+</html>

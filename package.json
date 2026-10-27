@@ -1,0 +1,18 @@
+{
+  "name": "v9.34.3-ultimate",
+  "version": "1.0.0",
+  "description": "mkdir V9.34.3-ULTIMATE\r # copy 6 file tadi ke dalam folder itu\r cd V9.34.3-ULTIMATE\r npm init -y\r npm i express dotenv",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0"
+  }
+}
